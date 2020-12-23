@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using CreditCardApplications;
 using Moq;
 using Xunit;
@@ -29,6 +30,19 @@ namespace CreditCardApplication.Tests
             CreditCardApplicationDecision decision = sut.Evaluate(application);
 
             Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
+        }
+
+        [Fact]
+        public void DeclineLowIncomeApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.IsValid("x")).Returns(true);
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCardApplications.CreditCardApplication {GrossAnnualIncome = 19_999, Age = 42, FrequentFlyerNumber = "x"};
+
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
         }
     }
 }
