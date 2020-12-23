@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using CreditCardApplications;
 using Moq;
 using Xunit;
@@ -24,6 +22,8 @@ namespace CreditCardApplication.Tests
         public void ReferYoungApplications()
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+
             var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
             var application = new CreditCardApplications.CreditCardApplication {Age = 19};
 
