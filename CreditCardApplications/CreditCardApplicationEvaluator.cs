@@ -21,6 +21,11 @@ namespace CreditCardApplications
                 return CreditCardApplicationDecision.AutoAccepted;
             }
 
+            if (_validator.LinenseKey == "EXPIRED")
+            {
+                return CreditCardApplicationDecision.ReferredToHuman;
+            }
+
             var isValidFrequentFlyerNumber = _validator.IsValid(application.FrequentFlyerNumber);
 
             if (!isValidFrequentFlyerNumber)
