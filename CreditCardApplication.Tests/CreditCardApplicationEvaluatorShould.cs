@@ -12,6 +12,7 @@ namespace CreditCardApplication.Tests
         {
             Mock<IFrequentFlyerNumberValidator> mockValidator = new Mock<IFrequentFlyerNumberValidator>(MockBehavior.Strict);
 
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
             mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(false);
 
             var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
@@ -24,9 +25,33 @@ namespace CreditCardApplication.Tests
         }
 
         [Fact]
+        public void DeclineLowIncomeApplications()
+        {
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+            mockValidator.Setup(x => x.IsValid(It.IsRegex("[a-z]"))).Returns(true);
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
+
+            var application = new CreditCardApplications.CreditCardApplication
+            {
+                GrossAnnualIncome = 19_999,
+                Age = 42,
+                FrequentFlyerNumber = "y"
+            };
+
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCardApplicationDecision.AutoDeclined, decision);
+        }
+
+        [Fact]
         public void AcceptHighIncomeApplications()
         {
-            var sut = new CreditCardApplicationEvaluator(null);
+            Mock<IFrequentFlyerNumberValidator> mockValidator = 
+                new Mock<IFrequentFlyerNumberValidator>();
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
             var application = new CreditCardApplications.CreditCardApplication {GrossAnnualIncome = 100_000};
 
             CreditCardApplicationDecision decision = sut.Evaluate(application);
@@ -37,7 +62,11 @@ namespace CreditCardApplication.Tests
         [Fact]
         public void ReferYoungApplications()
         {
-            var sut = new CreditCardApplicationEvaluator(null);
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.DefaultValue = DefaultValue.Mock;
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
             var application = new CreditCardApplications.CreditCardApplication {Age = 19};
 
             CreditCardApplicationDecision decision = sut.Evaluate(application);
