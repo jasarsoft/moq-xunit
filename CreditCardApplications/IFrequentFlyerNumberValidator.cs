@@ -20,5 +20,7 @@ namespace CreditCardApplications
         //string LinenseKey { get; }
 
         IServiceInformation ServiceInformation { get; }
+
+        ValidationMode ValidationMode { get; set; }
     }
 }
