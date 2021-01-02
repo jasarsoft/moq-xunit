@@ -142,6 +142,24 @@ namespace CreditCardApplication.Tests
         }
 
         [Fact]
+        public void ValidateFrequentFlyerNumberForLowIncomeApplicationsTimes()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCardApplications.CreditCardApplication()
+            {
+                FrequentFlyerNumber = "q"
+            };
+
+            sut.Evaluate(application);
+
+            mockValidator.Verify(p => p.IsValid(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
         public void NotValidateFrequentFlyerNumberForHighIncomeApplications()
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
