@@ -213,5 +213,23 @@ namespace CreditCardApplication.Tests
 
             mockValidator.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ReferWhenFrequentFlyerValidationError()
+        {
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+
+            mockValidator.Setup(p => p.ServiceInformation.License.LicenseKey).Returns("OK");
+            mockValidator.Setup(p => p.IsValid(It.IsAny<string>()))
+                         .Throws(new Exception("Custom message"));
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCardApplications.CreditCardApplication {Age = 42};
+
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCardApplicationDecision.ReferredToHuman, decision);
+        }
     }
 }
+ 
