@@ -27,7 +27,10 @@ namespace CreditCardApplications
         }
 
         public IServiceInformation ServiceInformation { get; }
+
         public ValidationMode ValidationMode { get; set; }
+
+        public event EventHandler ValidatorLookupPerformed;
 
         //public string LinenseKey { get; }
     }

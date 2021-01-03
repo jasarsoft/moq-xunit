@@ -22,5 +22,7 @@ namespace CreditCardApplications
         IServiceInformation ServiceInformation { get; }
 
         ValidationMode ValidationMode { get; set; }
+
+        event EventHandler ValidatorLookupPerformed;
     }
 }
