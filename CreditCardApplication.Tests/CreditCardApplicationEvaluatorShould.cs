@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CreditCardApplications;
 using Moq;
+using Moq.Protected;
 using Xunit;
 
 namespace CreditCardApplication.Tests
@@ -307,6 +308,25 @@ namespace CreditCardApplication.Tests
             Mock<IFrequentFlyerNumberValidator> mockValidator = new Mock<IFrequentFlyerNumberValidator>();
             var mockFraudLookup = new Mock<FraudLookup>();
             mockFraudLookup.Setup(p => p.IsFraudRisk(It.IsAny<CreditCardApplications.CreditCardApplication>()))
+                .Returns(true);
+
+            var sut = new CreditCardApplicationEvaluator(mockValidator.Object, mockFraudLookup.Object);
+            var application = new CreditCardApplications.CreditCardApplication();
+
+            CreditCardApplicationDecision decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCardApplicationDecision.ReferredToHumanFraudRisk, decision);
+        }
+
+        [Fact]
+        public void ReferFraudRisk2()
+        {
+            Mock<IFrequentFlyerNumberValidator> mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            
+            var mockFraudLookup = new Mock<FraudLookup>();
+            mockFraudLookup
+                .Protected()
+                .Setup<bool>("CheckApplication", ItExpr.IsAny<CreditCardApplications.CreditCardApplication>())
                 .Returns(true);
 
             var sut = new CreditCardApplicationEvaluator(mockValidator.Object, mockFraudLookup.Object);
