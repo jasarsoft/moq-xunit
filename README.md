@@ -1,0 +1,4 @@
+# Mocking with Moq and xUnit
+### by Jason Roberts
+
+Writing unit tests can be difficult, time-consuming, and slow when you can't isolate the classes you want to test from the rest of the system. In this course, Mocking with Moq and xUnit, you'll learn how to create mocks and use them as dependencies to the classes you want to test. First, you'll discover how to configure mocked methods and properties to return specific values. Next, you'll learn how to perform behavior/interaction testing to check your classes are interacting correctly with their dependencies. Finally, you'll explore how to setup mock exceptions, mock events, and use additional mocking techniques. When you're finished with this course, you'll have the necessary knowledge to use Moq to unit test your classes in isolation by creating and using mock objects.
